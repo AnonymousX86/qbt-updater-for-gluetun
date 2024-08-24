@@ -113,13 +113,14 @@ def main():
             verify_qbittorrent_port(s, port)
             print('Port verified')
 
-            sep('Done')
-            print(f'Next run in {int(TIMEOUT)} seconds...')
-            sleep(TIMEOUT)
     except Exception as e:
         raise e
     finally:
         s.close()
+
+    sep('Done')
+    print(f'Next run in {int(TIMEOUT)} seconds...')
+    sleep(TIMEOUT)
 
 
 if __name__ == '__main__':
