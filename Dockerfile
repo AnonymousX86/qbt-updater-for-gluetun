@@ -1,8 +1,11 @@
-FROM python:3.12-alpine
+FROM python:3.12
 
-COPY /app/entrypoint.py .
-COPY /app/requirements.txt .
+WORKDIR /qbt-updater
 
-RUN python -m pip install -r requirements.txt
+COPY ./requirements.txt /qbt-updater/
 
-CMD [ "python", "entrypoint.py" ]
+RUN pip install --no-cache-dir --upgrade -r requirements.txt
+
+COPY ./app /qbt-updater/app/
+
+CMD [ "python", "./main.py" ]
