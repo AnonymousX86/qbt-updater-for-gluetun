@@ -8,4 +8,4 @@ RUN pip install --no-cache-dir --upgrade -r requirements.txt
 
 COPY ./app /qbt-updater/app/
 
-CMD [ "python", "./main.py" ]
+CMD [ "python", "/qbt-updater/app/main.py" ]
