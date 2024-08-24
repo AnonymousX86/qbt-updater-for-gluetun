@@ -2,10 +2,10 @@
     "version": "0.2.0",
     "configurations": [
         {
-            "name": "Python Debugger: entrypoint.py",
+            "name": "Python Debugger: main.py",
             "type": "debugpy",
             "request": "launch",
-            "program": "${workspaceFolder}/app/entrypoint.py",
+            "program": "${workspaceFolder}/app/main.py",
             "envFile": "${workspaceFolder}/app/.env",
             "console": "integratedTerminal"
         }
