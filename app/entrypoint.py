@@ -112,7 +112,6 @@ def main():
             print('Verifying port...')
             verify_qbittorrent_port(s, port)
             print('Port verified')
-
     except Exception as e:
         raise e
     finally:
