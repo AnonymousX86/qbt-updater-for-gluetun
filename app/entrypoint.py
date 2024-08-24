@@ -5,13 +5,11 @@ from os import getenv
 from time import sleep
 
 
-GLUETUN_URL = str(getenv('GLUETUN_URL'))
-QBITTORRENT_URL = str(getenv('QBITTORRENT_URL'))
-QBITTORRENT_USER = str(getenv('QBITTORRENT_USER', 'admin'))
-QBITTORRENT_PASSWORD = str(getenv('QBITTORRENT_PASSWORD'))
-TIMEOUT = float(getenv('TIMEOUT', 3600))
-
-# TODO - Check if variables are set
+GLUETUN_URL = getenv('GLUETUN_URL')
+QBITTORRENT_URL = getenv('QBITTORRENT_URL')
+QBITTORRENT_USER = getenv('QBITTORRENT_USER', 'admin')
+QBITTORRENT_PASSWORD = getenv('QBITTORRENT_PASSWORD')
+TIMEOUT = getenv('TIMEOUT', 3600)
 
 DEFAULT_QBT_HEADERS = {
     'Referer': QBITTORRENT_URL,
@@ -21,6 +19,22 @@ DEFAULT_QBT_HEADERS = {
 
 def sep(text: str, *, n: int = 4, char: str = '*') -> None:
     print('\n{0} {1} {0}'.format(n * char, text))
+
+
+def check_env() -> None:
+    env = {
+        'GLUETUN_URL': GLUETUN_URL,
+        'QBITTORRENT_URL': QBITTORRENT_URL,
+        'QBITTORRENT_PASSWORD': QBITTORRENT_PASSWORD
+    }
+    for key in env.keys():
+        if not env.get(key):
+            raise RuntimeError(f'{key} is missing')
+    try:
+        _ = float(TIMEOUT)
+    except ValueError:
+        raise RuntimeError('TIMEOUT is not a number')
+
 
 
 def is_gluetun_ready(s: Session) -> bool:
@@ -118,12 +132,13 @@ def main():
         s.close()
 
     sep('Done')
-    print(f'Next run in {int(TIMEOUT)} seconds...')
-    sleep(TIMEOUT)
+    print(f'Next run in {TIMEOUT} seconds...')
+    sleep(float(TIMEOUT))
 
 
 if __name__ == '__main__':
     try:
+        check_env()
         while True:
             main()
     except Exception as e:
