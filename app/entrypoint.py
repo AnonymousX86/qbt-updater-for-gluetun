@@ -123,9 +123,10 @@ def main():
 
 
 if __name__ == '__main__':
-    while True:
-        try:
+    try:
+        while True:
             main()
-        except Exception as e:
-            print(f'{e.__class__.__name__}: {e}')
-            break
+    except Exception as e:
+        print(f'{e.__class__.__name__}: {e}')
+    except KeyboardInterrupt:
+        exit()
