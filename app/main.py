@@ -9,53 +9,51 @@ from settings import settings
 from utils import sep
 
 
-def precheck() -> bool:
+def precheck(s: Session) -> bool:
     try:
-        with Session() as s:
-            sep('gluetun')
-            print('Waiting for gluetun...')
-            wait_for_gluetun(s)
-            print('Gluetun is running')
+        sep('gluetun')
+        print('Waiting for gluetun...')
+        wait_for_gluetun(s)
+        print('Gluetun is running')
 
-            sep('qBittorrent')
-            print('Waiting for qBittorrent...')
-            wait_for_qbittorrent(s)
-            print('qBittorrent is ready')
+        sep('qBittorrent')
+        print('Waiting for qBittorrent...')
+        wait_for_qbittorrent(s)
+        print('qBittorrent is ready')
     except Exception as e:
         raise e
     else:
-        s.close()
         return True
 
 
-def update_port() -> bool:
-    with Session() as s:
-        current_port = get_qbittorrent_port(s)
-        port = get_assigned_port(s)
+def update_port(s: Session) -> bool:
+    current_port = get_qbittorrent_port(s)
+    port = get_assigned_port(s)
 
-        if current_port == port:
-            print(f'Port {port} is already set in qBittorrent')
-            return True
+    if current_port == port:
+        print(f'Port {port} is already set in qBittorrent')
+        return True
 
-        print(f'Updating qBittorrent port from {current_port} to {port}...')
-        if update_qbittorrent_port(s, port):
-            print('Port updated successfully')
-            return True
-        else:
-            print('Failed to update port')
-            return False
+    print(f'Updating qBittorrent port from {current_port} to {port}...')
+    if update_qbittorrent_port(s, port):
+        print('Port updated successfully')
+        return True
+    else:
+        print('Failed to update port')
+        return False
 
 
 def main() -> None:
-    if not precheck():
-        raise RuntimeError('Precheck failed')
-    while True:
-        if update_port():
-            sep('Done')
-            print(f'Next run in {settings.timeout} seconds...')
-            sleep(settings.timeout)
-        else:
-            raise RuntimeError('Failed to update port')
+    with Session() as s:
+        if not precheck(s):
+            raise RuntimeError('Precheck failed')
+        while True:
+            if update_port(s):
+                sep('Done')
+                print(f'Next run in {settings.timeout} seconds...')
+                sleep(settings.timeout)
+            else:
+                raise RuntimeError('Failed to update port')
 
 
 if __name__ == '__main__':
