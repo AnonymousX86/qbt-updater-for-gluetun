@@ -21,7 +21,7 @@ class Settings:
         self.timeout = float(getenv('TIMEOUT', '3600'))
 
     @property
-    def default_headers(self) -> dict:
+    def default_headers(self) -> dict[str, str]:
         return {
             'Referer': self.qbittorrent.url,
             'Content-Type': 'application/x-www-form-urlencoded'

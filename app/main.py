@@ -3,59 +3,59 @@ from requests import Session
 
 from time import sleep
 
-from gluetun import is_gluetun_ready, get_assigned_port
-from qbittorrent import login_to_qbittorrent, update_qbittorrent_port, \
-    verify_qbittorrent_port
+from gluetun import wait_for_gluetun, get_assigned_port
+from qbittorrent import wait_for_qbittorrent, get_qbittorrent_port, update_qbittorrent_port
 from settings import settings
 from utils import sep
 
 
-def main():
-    # gluetun
+def precheck() -> bool:
     try:
         with Session() as s:
             sep('gluetun')
-
-            # Wait for gluetun
-            while not is_gluetun_ready(s):
-                print('Waiting for gluetun...')
+            print('Waiting for gluetun...')
+            wait_for_gluetun(s)
             print('Gluetun is running')
 
-            # Get assigned port
-            port = get_assigned_port(s)
-            print(f'Assigned port: {port}')
-    except Exception as e:
-        raise e
-    finally:
-        s.close()
-
-    # qBittorrent
-    try:
-        with Session() as s:
             sep('qBittorrent')
-
-            # Login to qBittorent
-            print('Trying to login to qBittorrent...')
-            login_to_qbittorrent(s)
-            print('Logged in')
-
-            # Update listening port
-            print('Trying to update listening port...')
-            update_qbittorrent_port(s, port)
-            print('Port updated')
-
-            # Verify if port has been changed (for my sanity)
-            print('Verifying port...')
-            verify_qbittorrent_port(s, port)
-            print('Port verified')
+            print('Waiting for qBittorrent...')
+            wait_for_qbittorrent(s)
+            print('qBittorrent is ready')
     except Exception as e:
         raise e
-    finally:
+    else:
         s.close()
+        return True
 
-    sep('Done')
-    print(f'Next run in {settings.timeout} seconds...')
-    sleep(settings.timeout)
+
+def update_port() -> bool:
+    with Session() as s:
+        current_port = get_qbittorrent_port(s)
+        port = get_assigned_port(s)
+
+        if current_port == port:
+            print(f'Port {port} is already set in qBittorrent')
+            return True
+
+        print(f'Updating qBittorrent port from {current_port} to {port}...')
+        if update_qbittorrent_port(s, port):
+            print('Port updated successfully')
+            return True
+        else:
+            print('Failed to update port')
+            return False
+
+
+def main() -> None:
+    if not precheck():
+        raise RuntimeError('Precheck failed')
+    while True:
+        if update_port():
+            sep('Done')
+            print(f'Next run in {settings.timeout} seconds...')
+            sleep(settings.timeout)
+        else:
+            raise RuntimeError('Failed to update port')
 
 
 if __name__ == '__main__':
