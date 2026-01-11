@@ -30,7 +30,6 @@ services:
     restart: unless-stopped
     environment:
       # Assuming apps expose ports on gateway of "custom-network"
-      # Note: without Docker DNS tricks, hostnames are unsopported
       GLUETUN_URL: http://172.18.0.1:8000
       QBITTORRENT_URL: http://172.18.0.1:8080
     env_file:
