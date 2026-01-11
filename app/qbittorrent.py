@@ -27,12 +27,14 @@ def wait_for_qbittorrent(s: Session) -> None:
     while retries < max_retries:
         try:
             login_to_qbittorrent(s)
+            break
         except RuntimeError as e:
             if str(e).startswith('Can\'t login'):
                 raise e
+        # TODO - Supress `HTTPConnectionPool` or `NewConnectionError` exception.
         else:
             retries += 1
-            sleep(2.0)
+            sleep(5.0)
 
 
 def get_qbittorrent_port(s: Session) -> int:
