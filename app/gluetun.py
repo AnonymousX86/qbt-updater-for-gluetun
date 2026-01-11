@@ -28,7 +28,10 @@ def wait_for_gluetun(s: Session) -> None:
 
 
 def get_assigned_port(s: Session) -> int:
-    res = s.get(f'{BASE_URL}/v1/portforward')
-    if (code := res.status_code) != 200:
-        raise RuntimeError(f'Error {code}: {res.text}')
-    return int(res.json().get('port'))
+    assigned_port = 0
+    while assigned_port == 0:
+        res = s.get(f'{BASE_URL}/v1/portforward')
+        if (code := res.status_code) != 200:
+            raise RuntimeError(f'Error {code}: {res.text}')
+        assigned_port = int(res.json().get('port'))
+    return assigned_port
