@@ -25,7 +25,7 @@ python app/main.py
 ---
 services:
   qbt-updater:
-    build: https://github.com/AnonymousX86/qbt-updater-for-gluetun.git#v1.1
+    build: https://github.com/AnonymousX86/qbt-updater-for-gluetun.git#v1.2
     container_name: qbt-updater
     restart: unless-stopped
     environment:
