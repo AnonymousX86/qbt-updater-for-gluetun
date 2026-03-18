@@ -18,10 +18,11 @@ services:
       UPDATER_PERIOD: 2m
     env_file:
       - gluetun.env
-    tmpfs:
-      - /gluetun
     volumes:
       - ./auth_config.toml:/gluetun/auth/config.toml
+      - ./volumes/gluetun:/gluetun
+    # tmpfs:
+    #   - /gluetun
     ports:
       - '127.0.0.1:8080:8080/tcp'
     expose:
@@ -38,8 +39,9 @@ services:
       PGID: 1000
     volumes:
       - ./volumes/qbittorrent/config:/config
-    tmpfs:
-      - /downloads
+      - ./volumes/qbittorrent/downloads:/downloads
+    # tmpfs:
+    #   - /downloads
     network_mode: service:gluetun
     depends_on:
       gluetun:
