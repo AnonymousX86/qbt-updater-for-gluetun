@@ -5,6 +5,7 @@ from os import getenv
 class GluetunSettings:
     def __init__(self) -> None:
         self.url = getenv('GLUETUN_URL', 'http://127.0.0.1:8000')
+        self.api_key = getenv('GLUETUN_API_KEY', '')
 
 
 class QbittorrentSettings:

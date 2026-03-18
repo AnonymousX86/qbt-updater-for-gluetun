@@ -1,0 +1,5 @@
+[[roles]]
+name = "qbtupdater"
+routes = ["GET /v1/vpn/status", "GET /v1/portforward"]
+auth = "apikey"
+apikey = "TESTQKDi0nw7yeiUlYC1/XrxN9VCuJXVHQLM+5UlndDr"

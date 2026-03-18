@@ -20,6 +20,8 @@ services:
       - gluetun.env
     tmpfs:
       - /gluetun
+    volumes:
+      - ./auth_config.toml:/gluetun/auth/config.toml
     ports:
       - '127.0.0.1:8080:8080/tcp'
     expose:
@@ -49,7 +51,9 @@ services:
     restart: unless-stopped
     environment:
       GLUETUN_URL: http://localhost:8000
+      GLUETUN_API_KEY: TESTQKDi0nw7yeiUlYC1/XrxN9VCuJXVHQLM+5UlndDr
       QBITTORRENT_URL: http://localhost:8080
+      QBT_UPDATER_DEBUG: true
     env_file:
       - qbt-updater.env
     network_mode: service:gluetun
