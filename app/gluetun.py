@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from requests import Session
-
 from time import sleep
+
+from requests import Session
 
 from settings import settings
 

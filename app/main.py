@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
-from requests import Session
-
 from time import sleep
+
+from requests import Session
 
 from gluetun import wait_for_gluetun, get_assigned_port
 from qbittorrent import wait_for_qbittorrent, get_qbittorrent_port, update_qbittorrent_port
