@@ -4,6 +4,7 @@ from time import sleep
 from requests import Session
 
 from settings import settings
+from utils import debug
 
 
 BASE_URL = settings.gluetun.url

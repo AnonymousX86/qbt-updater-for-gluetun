@@ -19,6 +19,7 @@ class Settings:
         self.gluetun = GluetunSettings()
         self.qbittorrent = QbittorrentSettings()
         self.timeout = float(getenv('TIMEOUT', '3600'))
+        self.debug = bool(getenv('QBT_UPDATER_DEBUG', 'false').lower())
 
     @property
     def default_headers(self) -> dict[str, str]:
