@@ -4,6 +4,8 @@ WORKDIR /qbt-updater
 
 COPY ./requirements.txt /qbt-updater/
 
+RUN python3 -m pip install --no-cache-dir --upgrade --root-user-action ignore pip wheel
+
 RUN python3 -m pip install --no-cache-dir --upgrade --root-user-action ignore -r requirements.txt
 
 COPY ./app /qbt-updater/app/
