@@ -16,26 +16,22 @@ def login_to_qbittorrent(s: Session) -> None:
         data='username={0.user}&password={0.password}'.format(settings.qbittorrent),
         headers=settings.default_headers
     )
+    debug(f'QBittorrent: {res.status_code} {res.text}')
     if (code := res.status_code) != 200:
         raise RuntimeError(f'Error {code}: {res.text}')
-    if not res.cookies.get('SID'):
-        raise RuntimeError('Can\'t login (wrong password?)')
 
 
 def wait_for_qbittorrent(s: Session) -> None:
     retries = 0
-    max_retries = 5
-    while retries < max_retries:
+    while True:
         try:
             login_to_qbittorrent(s)
             break
         except RuntimeError as e:
-            if str(e).startswith('Can\'t login'):
-                raise e
-        # TODO - Supress `HTTPConnectionPool` or `NewConnectionError` exception.
-        else:
-            retries += 1
-            sleep(5.0)
+            print(f'Error connecting to qBittorrent: {e}')
+        retries += 1
+        debug(f'Retrying to connect to qBittorrent... (attempt #{retries})')
+        sleep(5.0)
 
 
 def get_qbittorrent_port(s: Session) -> int:

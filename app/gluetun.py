@@ -13,12 +13,16 @@ BASE_URL = settings.gluetun.url
 def is_gluetun_ready(s: Session) -> bool:
     if (gluetun_api_key := settings.gluetun.api_key) == '':
         raise RuntimeError('Gluetun API key is not set')
+    debug(f'Using API key: {gluetun_api_key[:5]}***')
     res = s.get(
         f'{BASE_URL}/v1/vpn/status',
         headers={ 'X-API-Key': gluetun_api_key }
     )
+    debug(f'Gluetun: {res.status_code} {res.text}')
     if (code := res.status_code) == 200:
-        if res.json().get('status') == 'running':
+        gluetun_status = res.json().get('status', 'unknown')
+        debug(f'Gluetun is "{gluetun_status}"')
+        if gluetun_status == 'running':
             return True
     if not res.ok:
         raise RuntimeError(f'Error {code}: {res.text}')
@@ -27,10 +31,10 @@ def is_gluetun_ready(s: Session) -> bool:
 
 def wait_for_gluetun(s: Session) -> None:
     retries = 0
-    max_retries = 5
-    while not is_gluetun_ready(s) and retries < max_retries:
-        sleep(2.0)
+    while not is_gluetun_ready(s):
         retries += 1
+        debug(f'Waiting for gluetun... (attempt #{retries})')
+        sleep(2.0)
 
 
 def get_assigned_port(s: Session) -> int:
