@@ -10,22 +10,26 @@ from utils import debug
 BASE_URL = settings.qbittorrent.url
 
 
-def login_to_qbittorrent(s: Session) -> None:
-    res = s.post(
-        url=f'{BASE_URL}/api/v2/auth/login',
-        data='username={0.user}&password={0.password}'.format(settings.qbittorrent),
-        headers=settings.default_headers
+def is_qbittorrent_ready(s: Session) -> bool:
+    if (qbittorrent_api_key := settings.qbittorrent.api_key) == '':
+        raise RuntimeError('qBittorrent API key is not set.')
+    debug(f'Using qBittorent API key: {qbittorrent_api_key}')
+    res = s.get(
+        f'{BASE_URL}/api/v2/app/version',
+        headers={ 'Authorization': f'Bearer {qbittorrent_api_key}' }
     )
-    debug(f'QBittorrent: {res.status_code} {res.text}')
-    if (code := res.status_code) != 200:
+    if (code := res.status_code) == 200:
+        return True
+    if not res.ok:
         raise RuntimeError(f'Error {code}: {res.text}')
+    return False
 
 
 def wait_for_qbittorrent(s: Session) -> None:
     retries = 0
     while True:
         try:
-            login_to_qbittorrent(s)
+            is_qbittorrent_ready(s)
             break
         except RuntimeError as e:
             print(f'Error connecting to qBittorrent: {e}')
@@ -35,16 +39,23 @@ def wait_for_qbittorrent(s: Session) -> None:
 
 
 def get_qbittorrent_port(s: Session) -> int:
-    res = s.get(f'{BASE_URL}/api/v2/app/preferences')
+    res = s.get(
+        f'{BASE_URL}/api/v2/app/preferences',
+        headers={ 'Authorization': f'Bearer {settings.qbittorrent.api_key}' }
+    )
     if (code := res.status_code) != 200:
         raise RuntimeError(f'Error {code}: {res.text}')
     return int(res.json().get('listen_port'))
 
 
 def update_qbittorrent_port(s: Session, port: int) -> bool:
+    headers = settings.default_headers.copy()
+    headers.update({
+        'Authorization': f'Bearer {settings.qbittorrent.api_key}'
+    })
     res = s.post(
         url=f'{BASE_URL}/api/v2/app/setPreferences',
-        headers=settings.default_headers,
+        headers=headers,
         data='json={"listen_port":' + str(port) + '}'
     )
     if (code := res.status_code) != 200:

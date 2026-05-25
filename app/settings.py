@@ -11,8 +11,7 @@ class GluetunSettings:
 class QbittorrentSettings:
     def __init__(self) -> None:
         self.url = getenv('QBITTORRENT_URL', 'http://127.0.0.1:8080')
-        self.user = getenv('QBITTORRENT_USER', 'admin')
-        self.password = getenv('QBITTORRENT_PASSWORD', 'adminadmin')
+        self.api_key = getenv('QBITTORRENT_API_KEY', '')
 
 
 class Settings:

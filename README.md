@@ -20,8 +20,7 @@ python app/main.py
 | `GLUETUN_URL` | `http://127.0.0.1:8000` | URL to Gluetun control server. |
 | `GLUETUN_API_KEY` | `''` | API key for communicating with Gluetun control server. |
 | `QBITTORRENT_URL` | `http://127.0.0.1:8080` | URL to qBittorrent web UI. |
-| `QBITTORRENT_USER` | `admin` | qBittorrent login. |
-| `QBITTORRENT_PASSWORD` | `adminadmin` | qBittorrent password. |
+| `QBITTORRENT_API_KEY` | `''` | API key for communicating with qBittorrent. |
 | `TIMEOUT` | `3600` | How often port will be changed. |
 | `QBT_UPDATER_DEBUG` | `false` | Whether output more information. |
 
@@ -72,7 +71,7 @@ In this scenario use a [loopback address](https://en.wikipedia.org/wiki/Localhos
 Don't forget the `.env` file.
 
 ```env
-QBITTORRENT_PASSWORD="super-secret-password"
+QBITTORRENT_API_KEY="super-secret-api-key"
 GLUETUN_API_KEY="super-secret-api-key"
 ```
 
@@ -113,11 +112,22 @@ Quick routes explaination:
 
 If this will change in th future, I'll update this table to always include an explaination why a route is required.
 
-You can generate the API key, for exmaple: with using your password manager, `wg genkey`, or [Gluetun's built-in tool](https://github.com/qdm12/gluetun-wiki/blob/main/setup/advanced/control-server.md#authentication-methods).
+You can generate the API key, for exmaple: using your password manager, `openssl rand -base64 32`, or [Gluetun's built-in tool](https://github.com/qdm12/gluetun-wiki/blob/main/setup/advanced/control-server.md#authentication-methods).
 
 ```sh
 docker run --rm qmcgaw/gluetun genkey
 ```
+
+## qBittorrent configuration
+
+Since version 5.2.0 ([GitHub Wiki](https://github.com/qbittorrent/qBittorrent/wiki/API-Key-Authentication-(%E2%89%A5v5.2.0))) it's possible to use API key instead of combination of login and password. This is a preferred method, as it doesn't invoke cookies, which can magically disappear and are just another thing to remember. If you'd like to still use login and password, please use older versions. I do not plan to recover this functionality in future updates.
+
+To generate the API key:
+1. Login to qBittorent web.
+1. Open settings.
+1. Navigate to "WebUI" tab, "Authentication" section.
+1. Click "Rotate API Key" button then "Copy API key".
+1. Save the API key in `.env` file.
 
 ## FAQ
 
